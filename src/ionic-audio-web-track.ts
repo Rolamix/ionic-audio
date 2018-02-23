@@ -69,6 +69,7 @@ export class WebAudioTrack implements IAudioTrack {
     }, false);
 
     this.audio.addEventListener("canplay", (e) => {
+      console.log(`Track can play (loaded): ${this.src}`);
       this._isLoading = false;
       this._hasLoaded = true;
       this._nextCallbackObserver({value: e, status: STATUS_MEDIA.MEDIA_STARTING});
@@ -81,7 +82,8 @@ export class WebAudioTrack implements IAudioTrack {
       this._nextCallbackObserver({value: e, status: STATUS_MEDIA.MEDIA_RUNNING});
     }, false);
 
-    this.audio.addEventListener("pause", (e) =>{
+    this.audio.addEventListener("pause", (e) => {
+      console.log(`Paused track ${this.src}`);
       this._nextCallbackObserver({value: e, status: STATUS_MEDIA.MEDIA_PAUSED});
     }, false);
 

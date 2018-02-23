@@ -76,8 +76,9 @@ export class CordovaAudioTrack implements IAudioTrack {
       });
       this.destroy();  // TODO add parameter to control whether to release audio on stop or finished
     }, (err) => {
-      this._nextCallbackObserver({value: err, status:STATUS_MEDIA.MEDIA_ERROR});
       console.log(`Audio error => track ${this.src}`, err);
+      this.isPlaying = false;
+      this._nextCallbackObserver({value: err, status: STATUS_MEDIA.MEDIA_ERROR});
     }, (status) => {
       this._ngZone.run(()=>{
         console.log(`CordovaAudioTrack:status:`, status);
@@ -92,9 +93,11 @@ export class CordovaAudioTrack implements IAudioTrack {
             this._isLoading = false;
             break;
           case Media.MEDIA_PAUSED:
+            console.log(`Paused track ${this.src}`);
             this.isPlaying = false;
             break
           case Media.MEDIA_STOPPED:
+            console.log(`Stopped track ${this.src}`);
             this.isPlaying = false;
             break;
         }
