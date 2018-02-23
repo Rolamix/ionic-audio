@@ -7,6 +7,7 @@
   "scripts": {
     "build": "node_modules/.bin/ngc && copyfiles -u 1 ./src/*.scss ./dist",
     "release": "npm run build && npm publish",
+    "postinstall": "npm run build",
     "test": "cd demo && npm uninstall ionic-audio && cd.. && npm run build && cd demo && npm install ionic-audio && ionic serve"
   },
   "devDependencies": {
