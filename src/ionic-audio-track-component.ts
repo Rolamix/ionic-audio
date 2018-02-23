@@ -1,20 +1,19 @@
-import { ITrackConstraint, IAudioTrack, STATUS_MEDIA, Imessage } from './ionic-audio-interfaces';
+import { ITrackConstraint, IAudioTrack, STATUS_MEDIA, IMessage } from './ionic-audio-interfaces';
 import { AudioProvider } from './ionic-audio-providers';
 import { WebAudioTrack } from './ionic-audio-web-track';
 import { CordovaAudioTrack } from './ionic-audio-cordova-track';
 
 import { Component, DoCheck, OnChanges, SimpleChanges, EventEmitter, Output, Input } from '@angular/core';
 
-
 /**
- * # ```<audio-track>``` 
- * 
+ * # ```<audio-track>```
+ *
  * Creates a top level audio-track component
- * 
+ *
  * ## Usage
- * 
+ *
  * ````
- *   <audio-track #audio [track]="myTrack" (onFinish)="onTrackFinished($event)" (onEventRecibe)=fnOnEventRecibe($event)>
+ *   <audio-track #audio [track]="myTrack" (onFinish)="onTrackFinished($event)" (onStatusChanged)=fnOnEventReceived($event)>
  *   ...
  *   </audio-track>
  * ````
@@ -47,7 +46,7 @@ export class AudioTrackComponent implements OnChanges, DoCheck {
 
   /**
    * Output property expects an event handler to be notified whenever playback finishes
-   * 
+   *
    * @property onFinish
    * @type {EventEmitter}
    */
@@ -55,12 +54,12 @@ export class AudioTrackComponent implements OnChanges, DoCheck {
 
   /**
    * Output property expects an event handler to be notified whenever playback finishes
-   * 
-   * @property onEventRecibe
+   *
+   * @property onStatusChanged
    * @type {EventEmitter}
    */
 
-  @Output() onEventRecibe = new EventEmitter<Imessage>();
+  @Output() onStatusChanged = new EventEmitter<IMessage>();
 
   private _audioTrack: IAudioTrack;
 
@@ -71,10 +70,10 @@ export class AudioTrackComponent implements OnChanges, DoCheck {
 
     if (!(this.track instanceof WebAudioTrack) && !(this.track instanceof CordovaAudioTrack)) {
       this._audioTrack = this._audioProvider.create(this.track);
-      this._audioTrack.subscribe().subscribe(
-        (value) => { this.onEventRecibe.emit(value) },
+      this._audioTrack.observer.subscribe(
+        (value) => { this.onStatusChanged.emit(value) },
         (error) => { console.log("AudioTrackComponent:subscribe:onError:", error) },
-        () => { //Nothing 
+        () => { //Nothing
         }
       );
     } else {
@@ -189,12 +188,10 @@ export class AudioTrackComponent implements OnChanges, DoCheck {
     if (this._audioTrack && this._audioTrack.isPlaying) this._audioTrack.stop();
     if (changes.track && changes.track.currentValue && changes.track.currentValue.src) {
       let trackLoaded = this._audioProvider.tracks.find((item) => { return item.src == changes.track.currentValue.src })
-      if (trackLoaded)
-        this._audioTrack = trackLoaded;
-      else
-        this._audioTrack = this._audioProvider.create(changes.track.currentValue);
-      this._audioTrack.subscribe().subscribe(
-        (value) => { console.log("AudioTrackComponent:subscribe:onNext:", value); this.onEventRecibe.emit(value) },
+      this._audioTrack = trackLoaded || this._audioProvider.create(changes.track.currentValue);
+
+      this._audioTrack.observer.subscribe(
+        (value) => { console.log("AudioTrackComponent:subscribe:onNext:", value); this.onStatusChanged.emit(value) },
         (error) => { console.log("AudioTrackComponent:subscribe:onError:", error) },
         () => { console.log("AudioTrackComponent:subscribe:complete:"); }
       );

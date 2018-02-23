@@ -1,27 +1,26 @@
 import { Observable } from "rxjs/Observable";
 
-
 /**
  * Defines the audio provider contract
- * 
+ *
  * @export
  * @interface IAudioProvider
  */
 export interface IAudioProvider {
   current: number;
   tracks: IAudioTrack[];
-  
+
   create(track: ITrackConstraint): IAudioTrack;
   replace(oldAudioTrack: IAudioTrack, newTrack: ITrackConstraint): IAudioTrack;
   add(track: IAudioTrack);
   play(index: number);
   pause(index?: number);
   stop(index?: number);
-} 
+}
 
 /**
  * Defines the properties for JSON objects representing tracks to be played
- * 
+ *
  * @export
  * @interface ITrackConstraint
  */
@@ -30,13 +29,13 @@ export interface ITrackConstraint {
   src: string;
   title?: string;
   artist?: string;
-  art?: string;  
+  art?: string;
   preload?: string;
 }
 
 /**
- * Defines the audio track contract 
- * 
+ * Defines the audio track contract
+ *
  * @export
  * @interface IAudioTrack
  * @extends {ITrackConstraint}
@@ -44,7 +43,7 @@ export interface ITrackConstraint {
 export interface IAudioTrack extends ITrackConstraint {
   src: string;
   id: number;
-  isPlaying: boolean; 
+  isPlaying: boolean;
   isLoading: boolean;
   isFinished: boolean;
   hasLoaded: boolean
@@ -53,18 +52,19 @@ export interface IAudioTrack extends ITrackConstraint {
   completed: number;
   canPlay:  boolean;
   error: MediaError;
-  
+
   play();
   pause();
   stop();
   seekTo(time: number);
   destroy();
-  subscribe():Observable<any>;
+  subscribe(): Observable<any>;
+  observer: Observable<any>;
 }
 
 /**
- * Defines code to msg events 
- * 
+ * Defines code to msg events
+ *
  * @export
  * @interface IAudioTrack
  * @extends {ITrackConstraint}
@@ -86,7 +86,7 @@ export enum STATUS_MEDIA  {
 
 }
 
-export interface Imessage {
+export interface IMessage {
   status: STATUS_MEDIA;
   value: any;
 }
