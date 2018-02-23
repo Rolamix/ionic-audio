@@ -319,6 +319,18 @@ export class CordovaAudioTrack implements IAudioTrack {
   }
 
   /**
+   * Sets the volume of the current track. Valid values are (0, 1) inclusive.
+   *
+   * @method setVolume
+   * @param v {number} the new volume to set. Valid values are (0,1) inclusive.
+   */
+  setVolume(v: number) {
+    // Valid values are (0,1) inclusive.
+    const volume = Math.min(Math.max(0, v), 1);
+    this.audio.setVolume(volume);
+  }
+
+  /**
    * Releases audio resources
    *
    * @method destroy

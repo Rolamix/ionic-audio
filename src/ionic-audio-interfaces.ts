@@ -57,6 +57,7 @@ export interface IAudioTrack extends ITrackConstraint {
   pause();
   stop();
   seekTo(time: number);
+  setVolume(volume: number);
   destroy();
   subscribe(): Observable<any>;
   observer: Observable<any>;

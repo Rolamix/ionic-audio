@@ -219,7 +219,7 @@ export class WebAudioTrack implements IAudioTrack {
   /**
    * Gets a boolean value indicating whether the track has finished loading
    *
-   * @property hadLoaded
+   * @property hasLoaded
    * @readonly
    * @type {boolean}
    */
@@ -295,6 +295,20 @@ export class WebAudioTrack implements IAudioTrack {
     this._nextCallbackObserver({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO});
     this.audio.currentTime = time;
   }
+
+
+  /**
+   * Sets the volume of the current track. Valid values are (0, 1) inclusive.
+   *
+   * @method setVolume
+   * @param v {number} the new volume to set. Valid values are (0,1) inclusive.
+   */
+  setVolume(v: number) {
+    // Valid values are (0,1) inclusive.
+    const volume = Math.min(Math.max(0, v), 1);
+    this.audio.volume = volume;
+  }
+
 
   /**
    * Releases audio resources
