@@ -319,9 +319,15 @@ export class CordovaAudioTrack implements IAudioTrack {
  * @method seekTo
  * @param {number} time the new position (milliseconds) to seek to
  */
-  seekTo(time: number) {
+  seekTo(time: number, byPercent: boolean = false) {
+
+    let newTime = time;
+    if (byPercent) {
+      newTime = (time * this._duration) / 100;
+    }
+
     // Cordova Media reports duration and progress as seconds, so we need to multiply by 1000
-    this.audio.seekTo(time*1000);
+    this.audio.seekTo(newTime*1000);
     this._nextCallbackObserver({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO});
   }
 

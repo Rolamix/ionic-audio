@@ -292,10 +292,16 @@ export class WebAudioTrack implements IAudioTrack {
    * @method seekTo
    * @param {number} time the new position to seek to
    */
-  seekTo(time: number) {
+  seekTo(time: number, byPercent: boolean = false) {
     if (!this.audio) return;
+
+    let newTime = time;
+    if (byPercent) {
+      newTime = (time * this._duration) / 100;
+    }
+
     this._nextCallbackObserver({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO});
-    this.audio.currentTime = time;
+    this.audio.currentTime = newTime;
   }
 
 
