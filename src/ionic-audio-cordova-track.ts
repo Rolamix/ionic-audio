@@ -119,9 +119,13 @@ export class CordovaAudioTrack implements IAudioTrack {
             this._progress = Math.round(position*100)/100;
             this.detectPaused();
             this._completed = this._duration > 0 ? Math.round(this._progress / this._duration * 100)/100 : 0;
-            if (this._duration > 0 && this._progress > 0 && !this._progressEventSent){
-              this._progressEventSent = true;
-              this._nextCallbackObserver({value: this.audio, status: STATUS_MEDIA.MEDIA_PROGRESS_ENABLE});
+            if (this._duration > 0 && this._progress > 0) {
+              if (!this._progressEventSent) {
+                this._progressEventSent = true;
+                this._nextCallbackObserver({value: this.audio, status: STATUS_MEDIA.MEDIA_PROGRESS_ENABLE});
+              }
+
+              this._nextCallbackObserver({value: this._completed, status: STATUS_MEDIA.MEDIA_PROGRESS});
             }
           }
         })},
