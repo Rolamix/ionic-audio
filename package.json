@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "node_modules/.bin/ngc && copyfiles -u 1 ./src/*.scss ./dist",
+    "build": "node_modules/.bin/ngc && cp ./src/ionic-audio.scss ./dist/",
     "release": "npm run build && npm publish",
     "postinstall": "npm run build",
     "test": "cd demo && npm uninstall ionic-audio && cd.. && npm run build && cd demo && npm install ionic-audio && ionic serve"
@@ -19,7 +19,6 @@
     "@angular/http": "^5.0.0",
     "@angular/platform-browser": "^5.0.0",
     "@angular/platform-browser-dynamic": "^5.0.0",
-    "copyfiles": "^1.2.0",
     "ionic-angular": "3.9.2",
     "rxjs": "5.5.6",
     "sw-toolbox": "3.6.0",
