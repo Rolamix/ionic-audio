@@ -6,11 +6,11 @@ import { CordovaAudioTrack } from './ionic-audio-cordova-track';
 /**
  * Creates an audio provider based on the environment.
  * If running from within a browser, then defaults to HTML5 Audio. If running on a device, it will check for Cordova and Media plugins and use
- * a native audio player, otherwise falls back to HTML5 audio.  
- * 
+ * a native audio player, otherwise falls back to HTML5 audio.
+ *
  * @method factory
  * @static
- * @return {IAudioProvider} An IAudioProvider instance 
+ * @return {IAudioProvider} An IAudioProvider instance
  */
 export function defaultAudioProviderFactory() {
   return window.hasOwnProperty('cordova') && window.hasOwnProperty('Media') ? new CordovaMediaProvider() : new WebAudioProvider();
@@ -18,7 +18,7 @@ export function defaultAudioProviderFactory() {
 
 /**
  * Base class for audio providers
- * 
+ *
  * @export
  * @abstract
  * @class AudioProvider
@@ -35,20 +35,20 @@ export abstract class AudioProvider implements IAudioProvider {
   /**
    * Creates an IAudioTrack instance from a JSON object.
    * Not implemented in base class.
-   * 
+   *
    * @method create
    * @param {ITrackConstraint} track A JSON object containing at least a src property
    * @return null
    */
-  create(track: ITrackConstraint) {
+  create(track: ITrackConstraint): IAudioTrack {
     console.error('Not implemented in base class');
     return null;
   }
 
   /**
    * Replaces track with a new one
-   * @param oldAudioTrack 
-   * @param newTrack 
+   * @param oldAudioTrack
+   * @param newTrack
    */
   replace(oldAudioTrack: IAudioTrack, newTrack: ITrackConstraint): IAudioTrack {
     console.error('Not implemented in base class');
@@ -58,7 +58,7 @@ export abstract class AudioProvider implements IAudioProvider {
   /**
    * Adds an existing IAudioTrack instance to the array of managed tracks.
    *
-   * @method add 
+   * @method add
    * @param {IAudioTrack} audioTrack An instance of IAudioTrack
    */
   add(audioTrack: IAudioTrack) {
@@ -67,7 +67,7 @@ export abstract class AudioProvider implements IAudioProvider {
 
   /**
    * Plays a given track.
-   * 
+   *
    * @method play
    * @param {number} index The track id
    */
@@ -79,7 +79,7 @@ export abstract class AudioProvider implements IAudioProvider {
 
   /**
    * Pauses a given track.
-   * 
+   *
    * @method pause
    * @param {number} [index] The track id, or if undefined it will pause whichever track currently playing
    */
@@ -91,7 +91,7 @@ export abstract class AudioProvider implements IAudioProvider {
 
   /**
    * Stops a given track.
-   * 
+   *
    * @method stop
    * @param {number} [index] The track id, or if undefined it will stop whichever track currently playing
    */
@@ -104,7 +104,7 @@ export abstract class AudioProvider implements IAudioProvider {
 
   /**
    * Gets an array of tracks managed by this provider
-   * 
+   *
    * @property tracks
    * @readonly
    * @type {IAudioTrack[]}
@@ -115,7 +115,7 @@ export abstract class AudioProvider implements IAudioProvider {
 
   /**
    * Gets current track id
-   * 
+   *
    * @property current
    * @type {number}
    */
@@ -125,7 +125,7 @@ export abstract class AudioProvider implements IAudioProvider {
 
   /**
    * Sets current track id
-   * 
+   *
    * @property current
    */
   public set current(v: number) {
@@ -136,7 +136,7 @@ export abstract class AudioProvider implements IAudioProvider {
 
 /**
  * Creates an HTML5 audio provider
- * 
+ *
  * @export
  * @class WebAudioProvider
  * @constructor
@@ -161,7 +161,7 @@ export class WebAudioProvider extends AudioProvider {
   replace(oldAudioTrack: IAudioTrack, newTrack: ITrackConstraint): IAudioTrack {
     //WebAudioProvider.tracks.pop();
     let index = WebAudioProvider.tracks.findIndex((track) => Object.is(oldAudioTrack, track));
-    
+
 
     let newAudioTrack = newTrack instanceof WebAudioTrack ? newTrack : new WebAudioTrack(newTrack.src, newTrack.preload);
     Object.assign(newAudioTrack, newTrack);
@@ -172,7 +172,7 @@ export class WebAudioProvider extends AudioProvider {
       let trackId = WebAudioProvider.tracks.push(newAudioTrack);
       newAudioTrack.id = trackId - 1;
     }
-    
+
 
     console.log("Replaced audio track", oldAudioTrack, newAudioTrack);
     console.log("Current track list", WebAudioProvider.tracks);
@@ -183,7 +183,7 @@ export class WebAudioProvider extends AudioProvider {
 
 /**
  * Creates a Cordova audio provider
- * 
+ *
  * @export
  * @class CordovaMediaProvider
  * @constructor
