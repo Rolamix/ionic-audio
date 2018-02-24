@@ -185,18 +185,18 @@ export class CordovaAudioTrack implements IAudioTrack {
   }
 
   /**
- * Gets the track duration, or -1 if it cannot be determined
- *
- * @property duration
- * @readonly
- * @type {number}
- */
+   * Gets the track duration in seconds, or -1 if it cannot be determined
+   *
+   * @property duration
+   * @readonly
+   * @type {number}
+   */
   public get duration() : number {
     return this._duration;
   }
 
   /**
- * Gets current track time (progress)
+ * Gets current track time (progress) in seconds
  *
  * @property progress
  * @readonly

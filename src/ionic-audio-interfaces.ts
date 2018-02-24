@@ -47,8 +47,29 @@ export interface IAudioTrack extends ITrackConstraint {
   isLoading: boolean;
   isFinished: boolean;
   hasLoaded: boolean
+  /**
+   * Gets the track duration in seconds, or -1 if it cannot be determined
+   *
+   * @property duration
+   * @readonly
+   * @type {number}
+   */
   duration: number;
+  /**
+   * Gets current track time (progress) in seconds
+   *
+   * @property progress
+   * @readonly
+   * @type {number}
+   */
   progress: number;
+  /**
+   * Gets current track progress as a percentage
+   *
+   * @property completed
+   * @readonly
+   * @type {number}
+   */
   completed: number;
   canPlay:  boolean;
   error: MediaError;

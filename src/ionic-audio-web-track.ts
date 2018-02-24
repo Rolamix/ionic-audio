@@ -150,7 +150,7 @@ export class WebAudioTrack implements IAudioTrack {
   }
 
   /**
-   * Gets the track duration, or -1 if it cannot be determined
+   * Gets the track duration in seconds, or -1 if it cannot be determined
    *
    * @property duration
    * @readonly
@@ -161,7 +161,7 @@ export class WebAudioTrack implements IAudioTrack {
   }
 
   /**
-   * Gets current track time (progress)
+   * Gets current track time (progress) in seconds
    *
    * @property progress
    * @readonly
