@@ -287,7 +287,7 @@ export class CordovaAudioTrack implements IAudioTrack {
       this._isLoading = true;
     }
     this.isFinished = false;
-    this.audio.play();
+    this.audio.play({ playAudioWhenScreenIsLocked: true });
     this.startTimer();
   }
 
