@@ -113,12 +113,18 @@ export enum STATUS_MEDIA  {
   MEDIA_ERROR = 9,
   MEDIA_DURATION_CHANGE = 10,
   MEDIA_PROGRESS_ENABLE = 11,
-
 }
+
+export const STATUS_MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped",
+                                 "Position", "Progress", "Suspend", "Seek", "Error",
+                                 "DurationChange", "ProgressEnabled"]; // ProgressEnabled is like 'canPlay'
 
 export interface IMessage {
   status: STATUS_MEDIA;
   value: any;
 }
 
-
+export function createMessage({ value, status }: IMessage) {
+  const msg = STATUS_MEDIA_MSG[status];
+  return { value, status, eventName: msg };
+}

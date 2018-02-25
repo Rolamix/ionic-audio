@@ -1,4 +1,4 @@
-import {IAudioTrack, STATUS_MEDIA, IMessage} from './ionic-audio-interfaces';
+import {IAudioTrack, IMessage, STATUS_MEDIA, createMessage} from './ionic-audio-interfaces';
 import {Injectable, NgZone} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -66,7 +66,7 @@ export class CordovaAudioTrack implements IAudioTrack {
     }, (err) => {
       console.log(`Audio error => track ${this.src}`, err);
       this.isPlaying = false;
-      this._observer.next({value: err, status: STATUS_MEDIA.MEDIA_ERROR});
+      this._observer.next(createMessage({value: err, status: STATUS_MEDIA.MEDIA_ERROR}));
     }, (status) => {
       this._ngZone.run(()=>{
         console.log(`CordovaAudioTrack:status:`, status);
@@ -90,7 +90,7 @@ export class CordovaAudioTrack implements IAudioTrack {
             break;
         }
       });
-      this._observer.next({value: this.audio, status: status});
+      this._observer.next(createMessage({value: this.audio, status: status}));
     }, (initialVolume: number) => {
       this._volume = initialVolume;
       console.log('Got initial volume: ', this._volume);
@@ -113,10 +113,10 @@ export class CordovaAudioTrack implements IAudioTrack {
             if (this._duration > 0 && this._progress > 0) {
               if (!this._progressEventSent) {
                 this._progressEventSent = true;
-                this._observer.next({value: this.audio, status: STATUS_MEDIA.MEDIA_PROGRESS_ENABLE});
+                this._observer.next(createMessage({value: this.audio, status: STATUS_MEDIA.MEDIA_PROGRESS_ENABLE}));
               }
 
-              this._observer.next({value: this._completed, status: STATUS_MEDIA.MEDIA_PROGRESS});
+              this._observer.next(createMessage({value: this._completed, status: STATUS_MEDIA.MEDIA_PROGRESS}));
             }
           }
         })},
@@ -319,7 +319,7 @@ export class CordovaAudioTrack implements IAudioTrack {
 
     // Cordova Media reports duration and progress as seconds, so we need to multiply by 1000
     this.audio.seekTo(newTime*1000);
-    this._observer.next({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO});
+    this._observer.next(createMessage({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO}));
   }
 
   /**

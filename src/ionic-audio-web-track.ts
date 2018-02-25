@@ -1,4 +1,4 @@
-import {IAudioTrack ,IMessage, STATUS_MEDIA} from './ionic-audio-interfaces';
+import {IAudioTrack, IMessage, STATUS_MEDIA, createMessage} from './ionic-audio-interfaces';
 import {Injectable, Optional} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -48,32 +48,32 @@ export class WebAudioTrack implements IAudioTrack {
 
     this.audio.addEventListener("timeupdate", (e) => {
       this.onTimeUpdate(e);
-      this._observer.next({value: e, status: STATUS_MEDIA.MEDIA_POSITION});
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_POSITION}));
     }, false);
 
     this.audio.addEventListener("error", (err) => {
       console.log(`Audio error => track ${this.src}`, err);
       this.isPlaying = false;
-      this._observer.next({value: err, status: STATUS_MEDIA.MEDIA_ERROR});
+      this._observer.next(createMessage({value: err, status: STATUS_MEDIA.MEDIA_ERROR}));
     }, false);
 
     this.audio.addEventListener("canplay", (e) => {
       console.log(`Track can play (loaded): ${this.src}`);
       this._isLoading = false;
       this._hasLoaded = true;
-      this._observer.next({value: e, status: STATUS_MEDIA.MEDIA_STARTING});
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_STARTING}));
     }, false);
 
     this.audio.addEventListener("playing", (e) => {
       console.log(`Playing track ${this.src}`);
       this.isFinished = false;
       this.isPlaying = true;
-      this._observer.next({value: e, status: STATUS_MEDIA.MEDIA_RUNNING});
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_RUNNING}));
     }, false);
 
     this.audio.addEventListener("pause", (e) => {
       console.log(`Paused track ${this.src}`);
-      this._observer.next({value: e, status: STATUS_MEDIA.MEDIA_PAUSED});
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_PAUSED}));
     }, false);
 
 
@@ -83,7 +83,7 @@ export class WebAudioTrack implements IAudioTrack {
       this._progress = 0;
       this._completed = 0;
       this._hasLoaded = false;
-      this._observer.next({value: e, status: STATUS_MEDIA.MEDIA_STOPPED});
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_STOPPED}));
       //this.destroy();
       //observer.complete();
       console.log('Finished playback');
@@ -91,15 +91,15 @@ export class WebAudioTrack implements IAudioTrack {
 
     this.audio.addEventListener("durationchange", (e:any) => {
       this._duration = e.target.duration;
-      this._observer.next({value: e, status: STATUS_MEDIA.MEDIA_DURATION_CHANGE});
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_DURATION_CHANGE}));
     }, false);
 
     this.audio.addEventListener("progress", (e) => {
-      this._observer.next({value: e, status: STATUS_MEDIA.MEDIA_PROGRESS});
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_PROGRESS}));
     }, false);
 
     this.audio.addEventListener("suspend", (e) =>{
-      this._observer.next({value: e, status: STATUS_MEDIA.MEDIA_SUSPEND});
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_SUSPEND}));
     }, false);
 
   }
@@ -289,7 +289,7 @@ export class WebAudioTrack implements IAudioTrack {
       newTime = (time * this._duration) / 100;
     }
 
-    this._observer.next({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO});
+    this._observer.next(createMessage({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO}));
     this.audio.currentTime = newTime;
   }
 
