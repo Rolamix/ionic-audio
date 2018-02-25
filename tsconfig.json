@@ -25,6 +25,7 @@
     "src/index.ts",
     "src/ionic-audio.module.ts",
     "src/ionic-audio-web-track.ts",
+    "src/ionic-audio-playlist-item-directive.ts",
     "src/ionic-audio-track-progress-component.ts",
     "src/ionic-audio-track-play-component.ts",
     "src/ionic-audio-track-component.ts",
