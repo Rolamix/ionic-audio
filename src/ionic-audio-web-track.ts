@@ -328,8 +328,8 @@ export class WebAudioTrack implements IAudioTrack {
    */
   setVolume(v: number) {
     // Valid values are (0,1) inclusive.
-    const volume = Math.min(Math.max(0, v), 1);
-    this.audio.volume = volume;
+    this._volume = Math.min(Math.max(0, v), 1);
+    this.audio.volume = this._volume;
   }
 
 
