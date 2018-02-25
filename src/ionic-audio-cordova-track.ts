@@ -1,6 +1,7 @@
 import {IAudioTrack, STATUS_MEDIA, IMessage} from './ionic-audio-interfaces';
 import {Injectable, NgZone} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 declare let Media: any;
 
@@ -27,14 +28,8 @@ export class CordovaAudioTrack implements IAudioTrack {
   private _hasLoaded: boolean;
   private _timer: any;
   private _ngZone: NgZone;
-  private _observer: Observable<IMessage>;
+  private _observer: Subject<IMessage>;
   private _lastPositions = [0 ,0 ,0];
-  private _nextCallbackObserver = function(message: IMessage){
-    //not subscribed yet
-  };
-  private _completeCallbackObserver = function(){
-    //not subscribed yet
-  };
 
   constructor(public src: string) {
     if (window['cordova'] === undefined || window['Media'] === undefined) {
@@ -55,15 +50,7 @@ export class CordovaAudioTrack implements IAudioTrack {
   }
 
   private createAudio() {
-    this._observer = new Observable<IMessage>(observer => {
-      this._nextCallbackObserver = (message: IMessage) => {
-        observer.next(message);
-      };
-
-      this._completeCallbackObserver = () => {
-        observer.complete()
-      }
-    });
+    this._observer = new Subject<IMessage>();
 
     this.audio = new Media(this.src, () => {
       console.log('Finished playback');
@@ -79,7 +66,7 @@ export class CordovaAudioTrack implements IAudioTrack {
     }, (err) => {
       console.log(`Audio error => track ${this.src}`, err);
       this.isPlaying = false;
-      this._nextCallbackObserver({value: err, status: STATUS_MEDIA.MEDIA_ERROR});
+      this._observer.next({value: err, status: STATUS_MEDIA.MEDIA_ERROR});
     }, (status) => {
       this._ngZone.run(()=>{
         console.log(`CordovaAudioTrack:status:`, status);
@@ -103,7 +90,7 @@ export class CordovaAudioTrack implements IAudioTrack {
             break;
         }
       });
-      this._nextCallbackObserver({value: this.audio, status: status});
+      this._observer.next({value: this.audio, status: status});
     }, (initialVolume: number) => {
       this._volume = initialVolume;
       console.log('Got initial volume: ', this._volume);
@@ -126,10 +113,10 @@ export class CordovaAudioTrack implements IAudioTrack {
             if (this._duration > 0 && this._progress > 0) {
               if (!this._progressEventSent) {
                 this._progressEventSent = true;
-                this._nextCallbackObserver({value: this.audio, status: STATUS_MEDIA.MEDIA_PROGRESS_ENABLE});
+                this._observer.next({value: this.audio, status: STATUS_MEDIA.MEDIA_PROGRESS_ENABLE});
               }
 
-              this._nextCallbackObserver({value: this._completed, status: STATUS_MEDIA.MEDIA_PROGRESS});
+              this._observer.next({value: this._completed, status: STATUS_MEDIA.MEDIA_PROGRESS});
             }
           }
         })},
@@ -332,7 +319,7 @@ export class CordovaAudioTrack implements IAudioTrack {
 
     // Cordova Media reports duration and progress as seconds, so we need to multiply by 1000
     this.audio.seekTo(newTime*1000);
-    this._nextCallbackObserver({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO});
+    this._observer.next({value: time, status: STATUS_MEDIA.MEDIA_SEEKTO});
   }
 
   /**
