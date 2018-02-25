@@ -64,6 +64,10 @@ export class WebAudioTrack implements IAudioTrack {
       this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_STARTING}));
     }, false);
 
+    this.audio.addEventListener("canplaythrough", (e) => {
+      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_CANPLAY_THRU}));
+    }, false);
+
     this.audio.addEventListener("playing", (e) => {
       console.log(`Playing track ${this.src}`);
       this.isFinished = false;
@@ -89,9 +93,21 @@ export class WebAudioTrack implements IAudioTrack {
       console.log('Finished playback');
     }, false);
 
+    this.audio.addEventListener('loadstart', (e) => {
+      this._observer.next(createMessage({ value: e, status: STATUS_MEDIA.MEDIA_LOAD_STARTING}));
+    });
+
+    this.audio.addEventListener('loadstart', (e) => {
+      this._observer.next(createMessage({ value: e, status: STATUS_MEDIA.MEDIA_LOAD_STARTING}));
+    });
+
+    this.audio.addEventListener('loadedmetadata', (e) => {
+      this._observer.next(createMessage({ value: e, status: STATUS_MEDIA.MEDIA_LOADED_METADATA}));
+    });
+
     this.audio.addEventListener("durationchange", (e:any) => {
       this._duration = e.target.duration;
-      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_DURATION_CHANGE}));
+      this._observer.next(createMessage({value: e, duration: this._duration, status: STATUS_MEDIA.MEDIA_DURATION_CHANGE}));
     }, false);
 
     this.audio.addEventListener("progress", (e) => {
