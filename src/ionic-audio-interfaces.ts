@@ -71,6 +71,14 @@ export interface IAudioTrack extends ITrackConstraint {
    * @type {number}
    */
   completed: number;
+  /**
+   * Gets the current volume
+   *
+   * @property volume
+   * @readonly
+   * @type {number}
+   */
+  volume: number;
   canPlay:  boolean;
   error: MediaError;
 

@@ -22,6 +22,7 @@ export class WebAudioTrack implements IAudioTrack {
   private _progress: number = 0;
   private _completed: number = 0;
   private _duration: number;
+  private _volume: number;
   private _id: number;
   private _isLoading: boolean;
   private _hasLoaded: boolean;
@@ -45,6 +46,7 @@ export class WebAudioTrack implements IAudioTrack {
     this.audio = new Audio();
     this.audio.src = this.src;
     this.audio.preload = this.preload;
+    this._volume = this.audio.volume;
     //this.audio.controls = true;
     //this.audio.autoplay = false;
     this._observer = new Observable<IMessage>(observer => {
@@ -304,6 +306,16 @@ export class WebAudioTrack implements IAudioTrack {
     this.audio.currentTime = newTime;
   }
 
+  /**
+   * Gets the current volume
+   *
+   * @property volume
+   * @readonly
+   * @type {number}
+   */
+  get volume() {
+    return this._volume;
+  }
 
   /**
    * Sets the volume of the current track. Valid values are (0, 1) inclusive.

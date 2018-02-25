@@ -21,6 +21,7 @@ export class CordovaAudioTrack implements IAudioTrack {
   private _progressEventSent :boolean =false;
   private _completed: number = 0;
   private _duration: number;
+  private _volume: number = 1;
   private _id: number;
   private _isLoading: boolean;
   private _hasLoaded: boolean;
@@ -103,6 +104,9 @@ export class CordovaAudioTrack implements IAudioTrack {
         }
       });
       this._nextCallbackObserver({value: this.audio, status: status});
+    }, (initialVolume: number) => {
+      this._volume = initialVolume;
+      console.log('Got initial volume: ', this._volume);
     });
   }
 
@@ -332,6 +336,17 @@ export class CordovaAudioTrack implements IAudioTrack {
   }
 
   /**
+   * Gets the current volume
+   *
+   * @property volume
+   * @readonly
+   * @type {number}
+   */
+  get volume() {
+    return this._volume;
+  }
+
+  /**
    * Sets the volume of the current track. Valid values are (0, 1) inclusive.
    *
    * @method setVolume
@@ -339,8 +354,8 @@ export class CordovaAudioTrack implements IAudioTrack {
    */
   setVolume(v: number) {
     // Valid values are (0,1) inclusive.
-    const volume = Math.min(Math.max(0, v), 1);
-    this.audio.setVolume(volume);
+    this._volume = Math.min(Math.max(0, v), 1);
+    this.audio.setVolume(this._volume);
   }
 
   /**
