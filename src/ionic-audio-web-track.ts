@@ -262,7 +262,10 @@ export class WebAudioTrack implements IAudioTrack {
 
     //var source = this.ctx.createMediaElementSource(this.audio);
     //source.connect(this.ctx.destination);
-    this.audio.play();
+    const playPromise = this.audio.play();
+    if (playPromise.then && playPromise.catch) {
+      playPromise.catch(() => {}); // swallow DOM errors.
+    }
   }
 
   /**
