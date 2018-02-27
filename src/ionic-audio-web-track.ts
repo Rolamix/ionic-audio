@@ -343,6 +343,12 @@ export class WebAudioTrack implements IAudioTrack {
    */
   destroy() {
     this.audio = undefined;
+    this._isLoading = false;
+    this._hasLoaded = false;
+    this.isFinished = false;
+    this.isPlaying = false;
+    this._progress = 0;
+    this._completed = 0;
     console.log(`Released track ${this.src}`);
   }
 }
