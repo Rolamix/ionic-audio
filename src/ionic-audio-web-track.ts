@@ -101,10 +101,6 @@ export class WebAudioTrack implements IAudioTrack {
       this._observer.next(createMessage({ value: e, status: STATUS_MEDIA.MEDIA_LOAD_STARTING}));
     });
 
-    this.audio.addEventListener('loadstart', (e) => {
-      this._observer.next(createMessage({ value: e, status: STATUS_MEDIA.MEDIA_LOAD_STARTING}));
-    });
-
     this.audio.addEventListener('loadedmetadata', (e) => {
       this._observer.next(createMessage({ value: e, status: STATUS_MEDIA.MEDIA_LOADED_METADATA}));
     });
