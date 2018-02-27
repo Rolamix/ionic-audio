@@ -44,7 +44,10 @@ export class WebAudioTrack implements IAudioTrack {
     this._volume = this.audio.volume;
     //this.audio.controls = true;
     //this.audio.autoplay = false;
-    this._observer = new Subject<IMessage>();
+    // When the player is destroyed and then re-created, it should not create a new observer.
+    // Do not orphan the existing _observer instance, if there is one -
+    // it is likely that the track consumer is still subscribed to these events!
+    this._observer = this._observer || new Subject<IMessage>();
 
     this.audio.addEventListener("timeupdate", (e) => {
       this.onTimeUpdate(e);

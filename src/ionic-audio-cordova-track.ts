@@ -50,7 +50,7 @@ export class CordovaAudioTrack implements IAudioTrack {
   }
 
   private createAudio() {
-    this._observer = new Subject<IMessage>();
+    this._observer = this._observer || new Subject<IMessage>();
 
     this.audio = new Media(this.src, () => {
       console.log('Finished playback');
@@ -352,6 +352,13 @@ export class CordovaAudioTrack implements IAudioTrack {
    */
   destroy() {
     this.audio.release();
+    this.audio = undefined;
+    this._isLoading = false;
+    this._hasLoaded = false;
+    this.isFinished = false;
+    this.isPlaying = false;
+    this._progress = 0;
+    this._completed = 0;
     console.log(`Released track ${this.src}`);
   }
 }
