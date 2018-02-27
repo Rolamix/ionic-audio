@@ -49,6 +49,7 @@ export class WebAudioTrack implements IAudioTrack {
     // it is likely that the track consumer is still subscribed to these events!
     this._observer = this._observer || new Subject<IMessage>();
 
+    // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events
     this.audio.addEventListener("timeupdate", (e) => {
       this.onTimeUpdate(e);
       this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_POSITION}));
@@ -114,10 +115,13 @@ export class WebAudioTrack implements IAudioTrack {
     }, false);
 
     this.audio.addEventListener("progress", (e) => {
-      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_PROGRESS}));
+      console.log('Progress, buffered: ', this.audio.buffered);
+      this._observer.next(createMessage({value: { event: e, buffered: this.audio.buffered }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
     }, false);
 
     this.audio.addEventListener("suspend", (e) =>{
+      // This means the player is waiting. Finished downloading, or paused for any other reason
+      // except for user pausing. An example is a phone call.
       this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_SUSPEND}));
     }, false);
 
