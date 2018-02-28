@@ -52,13 +52,13 @@ export class WebAudioTrack implements IAudioTrack {
     // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events
     this.audio.addEventListener("timeupdate", (e) => {
       this.onTimeUpdate(e);
-      this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_POSITION}));
+      this._observer.next(createMessage({value: e, position: this.audio.currentTime, status: STATUS_MEDIA.MEDIA_POSITION}));
     }, false);
 
     this.audio.addEventListener("error", (err) => {
       console.log(`Audio error => track ${this.src}`, err);
       this.isPlaying = false;
-      this._observer.next(createMessage({value: err, status: STATUS_MEDIA.MEDIA_ERROR}));
+      this._observer.next(createMessage({value: err, error: this.audio.error, networkState: this.audio.networkState, status: STATUS_MEDIA.MEDIA_ERROR}));
     }, false);
 
     this.audio.addEventListener("canplay", (e) => {
