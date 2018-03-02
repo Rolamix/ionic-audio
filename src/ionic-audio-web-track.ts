@@ -62,7 +62,7 @@ export class WebAudioTrack implements IAudioTrack {
     }, false);
 
     this.audio.addEventListener("canplay", (e) => {
-      console.log(`Track can play (loaded): ${this.src}`);
+      // console.log(`Track can play (loaded): ${this.src}`);
       this._isLoading = false;
       this._hasLoaded = true;
       this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_STARTING}));
@@ -73,14 +73,14 @@ export class WebAudioTrack implements IAudioTrack {
     }, false);
 
     this.audio.addEventListener("playing", (e) => {
-      console.log(`Playing track ${this.src}`);
+      // console.log(`Playing track ${this.src}`);
       this.isFinished = false;
       this.isPlaying = true;
       this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_RUNNING}));
     }, false);
 
     this.audio.addEventListener("pause", (e) => {
-      console.log(`Paused track ${this.src}`);
+      // console.log(`Paused track ${this.src}`);
       this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_PAUSED}));
     }, false);
 
@@ -111,7 +111,6 @@ export class WebAudioTrack implements IAudioTrack {
     }, false);
 
     this.audio.addEventListener("progress", (e) => {
-      console.log('Progress, buffered: ', this.audio.buffered);
       this._observer.next(createMessage({value: { event: e, buffered: this.audio.buffered }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
     }, false);
 
@@ -259,7 +258,7 @@ export class WebAudioTrack implements IAudioTrack {
     }
 
     if (!this._hasLoaded) {
-      console.log(`Loading track ${this.src}`);
+      // console.log(`Loading track ${this.src}`);
       this._isLoading = true;
     }
 
@@ -278,7 +277,7 @@ export class WebAudioTrack implements IAudioTrack {
    */
   pause() {
     if (!this.isPlaying) return;
-    console.log(`Pausing track ${this.src}`);
+    // console.log(`Pausing track ${this.src}`);
     this.audio.pause();
     this.isPlaying = false;
   }
