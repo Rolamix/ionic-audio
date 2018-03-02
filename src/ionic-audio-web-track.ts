@@ -186,6 +186,7 @@ export class WebAudioTrack implements IAudioTrack {
    * @type {boolean}
    */
   public get canPlay() : boolean {
+    if (!this.audio) { return; }
     let format = `audio/${this.audio.src.substr(this.audio.src.lastIndexOf('.')+1)}`;
     return this.audio && this.audio.canPlayType(format) != '';
   }
@@ -255,6 +256,7 @@ export class WebAudioTrack implements IAudioTrack {
    */
   pause() {
     if (!this.isPlaying) return;
+    if (!this.audio) { return; }
     // console.log(`Pausing track ${this.src}`);
     this.audio.pause();
     this.isPlaying = false;
@@ -315,6 +317,7 @@ export class WebAudioTrack implements IAudioTrack {
   setVolume(v: number) {
     // Valid values are (0,1) inclusive.
     this._volume = Math.min(Math.max(0, v), 1);
+    if (!this.audio) { return; }
     this.audio.volume = this._volume;
   }
 
@@ -325,6 +328,8 @@ export class WebAudioTrack implements IAudioTrack {
    * @method destroy
    */
   destroy() {
+    if (!this.audio) { return; }
+    this.audio.src = '';
     this.audio = undefined;
     this._isLoading = false;
     this._hasLoaded = false;
