@@ -50,16 +50,8 @@ export class WebAudioTrack implements IAudioTrack {
     this._observer = this._observer || new Subject<IMessage>();
 
     // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events
-    this.audio.addEventListener("timeupdate", (e) => {
-      this.onTimeUpdate(e);
-      this._observer.next(createMessage({value: e, position: this.audio.currentTime, status: STATUS_MEDIA.MEDIA_POSITION}));
-    }, false);
-
-    this.audio.addEventListener("error", (err) => {
-      console.log(`Audio error => track ${this.src}`, err);
-      this.isPlaying = false;
-      this._observer.next(createMessage({value: err, error: this.audio.error, networkState: this.audio.networkState, status: STATUS_MEDIA.MEDIA_ERROR}));
-    }, false);
+    this.audio.addEventListener("timeupdate", this.handleTimeUpdate, false);
+    this.audio.addEventListener("error", this.handleTrackError, false);
 
     this.audio.addEventListener("canplay", (e) => {
       // console.log(`Track can play (loaded): ${this.src}`);
@@ -105,28 +97,14 @@ export class WebAudioTrack implements IAudioTrack {
       this._observer.next(createMessage({ value: e, status: STATUS_MEDIA.MEDIA_LOADED_METADATA}));
     });
 
-    this.audio.addEventListener("durationchange", (e:any) => {
-      this._duration = e.target.duration;
-      this._observer.next(createMessage({value: e, duration: this._duration, status: STATUS_MEDIA.MEDIA_DURATION_CHANGE}));
-    }, false);
-
-    this.audio.addEventListener("progress", (e) => {
-      this._observer.next(createMessage({value: { event: e, buffered: this.audio.buffered }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
-    }, false);
-
+    this.audio.addEventListener("durationchange", this.handleDurationChange, false);
+    this.audio.addEventListener("progress", this.handleBufferProgress, false);
     this.audio.addEventListener("suspend", (e) =>{
       // This means the player is waiting. Finished downloading, or paused for any other reason
       // except for user pausing. An example is a phone call.
       this._observer.next(createMessage({value: e, status: STATUS_MEDIA.MEDIA_SUSPEND}));
     }, false);
 
-  }
-
-  private onTimeUpdate(e: Event) {
-    if (this.isPlaying && this.audio.currentTime > 0) {
-      this._progress = this.audio.currentTime;
-      this._completed = this.audio.duration > 0 ? Math.trunc (this.audio.currentTime / this.audio.duration * 100)/100 : 0;
-    }
   }
 
 
@@ -290,7 +268,10 @@ export class WebAudioTrack implements IAudioTrack {
   stop() {
     if (!this.audio) return;
     this.pause();
-    this.audio.removeEventListener("timeupdate", (e) => { this.onTimeUpdate(e); });
+    this.audio.removeEventListener("timeupdate", this.handleTimeUpdate);
+    this.audio.removeEventListener("progress", this.handleBufferProgress);
+    this.audio.removeEventListener("durationchange", this.handleDurationChange);
+    this.audio.removeEventListener("error", this.handleTrackError);
     this.isFinished = true;
     //this.destroy();
   }
@@ -352,5 +333,32 @@ export class WebAudioTrack implements IAudioTrack {
     this._progress = 0;
     this._completed = 0;
     console.log(`Released track ${this.src}`);
+  }
+
+  private handleTrackError = (err) => {
+    console.log(`Audio error => track ${this.src}`, err);
+    this.isPlaying = false;
+    this._observer.next(createMessage({value: err, error: this.audio.error, networkState: this.audio.networkState, status: STATUS_MEDIA.MEDIA_ERROR}));
+  }
+
+  private handleBufferProgress = (e) => {
+    this._observer.next(createMessage({value: { event: e, buffered: this.audio.buffered }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
+  }
+
+  private handleDurationChange = (e:any) => {
+    this._duration = e.target.duration;
+    this._observer.next(createMessage({value: e, duration: this._duration, status: STATUS_MEDIA.MEDIA_DURATION_CHANGE}));
+  }
+
+  private handleTimeUpdate = (e) => {
+    this.onTimeUpdate(e);
+    this._observer.next(createMessage({value: e, position: this.audio.currentTime, status: STATUS_MEDIA.MEDIA_POSITION}));
+  }
+
+  private onTimeUpdate(e: Event) {
+    if (this.isPlaying && this.audio.currentTime > 0) {
+      this._progress = this.audio.currentTime;
+      this._completed = this.audio.duration > 0 ? Math.trunc (this.audio.currentTime / this.audio.duration * 100)/100 : 0;
+    }
   }
 }
