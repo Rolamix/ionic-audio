@@ -351,6 +351,7 @@ export class CordovaAudioTrack implements IAudioTrack {
    * @method destroy
    */
   destroy() {
+    if (!this.audio) { return; }
     this.audio.release();
     this.audio = undefined;
     this._isLoading = false;
