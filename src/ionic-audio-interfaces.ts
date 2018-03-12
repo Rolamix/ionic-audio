@@ -31,6 +31,7 @@ export interface ITrackConstraint {
   artist?: string;
   art?: string;
   preload?: string;
+  autoplay?: boolean;
 }
 
 /**

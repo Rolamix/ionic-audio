@@ -29,7 +29,11 @@ export class WebAudioTrack implements IAudioTrack {
   private _hasLoaded: boolean;
   private _observer: Subject<IMessage>;
 
-  constructor(public src: string, @Optional() public preload: string = 'none') {
+  constructor(
+    public src: string,
+    @Optional() public preload: string = 'none',
+    @Optional() public autoplay: boolean = false, // this flag is needed for older versions of iOS
+  ) {
     // audio context not needed for now
     // @Optional() private ctx: AudioContext = undefined
     // this.ctx = this.ctx || new AudioContext();
@@ -41,6 +45,7 @@ export class WebAudioTrack implements IAudioTrack {
     this.audio = new Audio();
     this.audio.src = this.src;
     this.audio.preload = this.preload;
+    this.audio.autoplay = this.autoplay || false;
     this._volume = this.audio.volume;
     //this.audio.controls = true;
     //this.audio.autoplay = false;

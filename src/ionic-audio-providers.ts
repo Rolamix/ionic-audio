@@ -151,7 +151,7 @@ export class WebAudioProvider extends AudioProvider {
   }
 
   create(track: ITrackConstraint) {
-    let audioTrack = new WebAudioTrack(track.src, track.preload);
+    let audioTrack = new WebAudioTrack(track.src, track.preload, track.autoplay || false);
     Object.assign(audioTrack, track);
     let trackId = WebAudioProvider.tracks.push(audioTrack);
     audioTrack.id = trackId - 1;
