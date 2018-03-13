@@ -26,7 +26,7 @@ export class CordovaAudioTrack implements IAudioTrack {
   private _id: number;
   private _isLoading: boolean;
   private _hasLoaded: boolean;
-  private _timer: any;
+  private _timer: any = null;
   private _ngZone: NgZone;
   private _observer: Subject<IMessage>;
   private _lastPositions = [0 ,0 ,0];
@@ -67,7 +67,7 @@ export class CordovaAudioTrack implements IAudioTrack {
       console.log(`Audio error => track ${this.src}`, err);
       this.isPlaying = false;
       this._observer.next(createMessage({value: err, status: STATUS_MEDIA.MEDIA_ERROR}));
-    }, (status) => {
+    }, (status, extraArg) => {
       this._ngZone.run(()=>{
         console.log(`CordovaAudioTrack:status:`, status);
         switch (status) {
@@ -88,6 +88,11 @@ export class CordovaAudioTrack implements IAudioTrack {
             console.log(`Stopped track ${this.src}`);
             this.isPlaying = false;
             break;
+          case Media.MEDIA_STATE_ERROR:
+            console.log(`Audio error state => track ${this.src}`, extraArg);
+            this.isPlaying = false;
+            // this._observer.next(createMessage({value: extraArg, status: STATUS_MEDIA.MEDIA_ERROR}));
+            break;
         }
       });
       this._observer.next(createMessage({value: this.audio, status: status}));
@@ -99,10 +104,15 @@ export class CordovaAudioTrack implements IAudioTrack {
 
   private startTimer() {
     this._timer = setInterval(() => {
-      if (this._duration === undefined) {
+      if (this._duration === undefined || this._duration < 0) {
         let duration: number = this.audio.getDuration();
-        (duration > 0) && (this._duration = Math.round(this.audio.getDuration()*100)/100);
+        if (duration > 0) {
+          this._duration = Math.round(duration*100)/100;
+          this._observer.next(createMessage({value: null, duration: this._duration, status: STATUS_MEDIA.MEDIA_DURATION_CHANGE}));
+        }
       }
+
+      console.log('Track buffered percent: ', this.audio.getBufferedPercent());
 
       this.audio.getCurrentPosition((position) => {
         this._ngZone.run(() => {
@@ -116,7 +126,7 @@ export class CordovaAudioTrack implements IAudioTrack {
                 this._observer.next(createMessage({value: this.audio, status: STATUS_MEDIA.MEDIA_PROGRESS_ENABLE}));
               }
 
-              this._observer.next(createMessage({value: this._completed, status: STATUS_MEDIA.MEDIA_PROGRESS}));
+              this._observer.next(createMessage({value: this._completed, status: STATUS_MEDIA.MEDIA_POSITION}));
             }
           }
         })},
@@ -128,7 +138,9 @@ export class CordovaAudioTrack implements IAudioTrack {
   }
 
   private stopTimer() {
+    if (!this._timer) { return; }
     clearInterval(this._timer);
+    this._timer = null;
   }
 
   private detectPaused() {
@@ -352,6 +364,7 @@ export class CordovaAudioTrack implements IAudioTrack {
    */
   destroy() {
     if (!this.audio) { return; }
+    this.stopTimer();
     this.audio.release();
     this.audio = undefined;
     this._isLoading = false;
