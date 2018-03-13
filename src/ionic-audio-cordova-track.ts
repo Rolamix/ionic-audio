@@ -22,6 +22,7 @@ export class CordovaAudioTrack implements IAudioTrack {
   private _progressEventSent :boolean =false;
   private _completed: number = 0;
   private _duration: number;
+  private _lastBufferedPercent: number = 0;
   private _volume: number = 1;
   private _id: number;
   private _isLoading: boolean;
@@ -58,6 +59,7 @@ export class CordovaAudioTrack implements IAudioTrack {
       this._ngZone.run(()=>{
         this._progress = 0;
         this._completed = 0;
+        this._lastBufferedPercent = 0;
         this._hasLoaded = false;
         this.isFinished = true;
         this.isPlaying = false;
@@ -91,6 +93,7 @@ export class CordovaAudioTrack implements IAudioTrack {
           case Media.MEDIA_STATE_ERROR:
             console.log(`Audio error state => track ${this.src}`, extraArg);
             this.isPlaying = false;
+            this._lastBufferedPercent = 0;
             // this._observer.next(createMessage({value: extraArg, status: STATUS_MEDIA.MEDIA_ERROR}));
             break;
         }
@@ -112,7 +115,14 @@ export class CordovaAudioTrack implements IAudioTrack {
         }
       }
 
-      console.log('Track buffered percent: ', this.audio.getBufferedPercent());
+      const bufferedPercent = this.audio.getBufferedPercent();
+      if (this._duration > 0 && bufferedPercent > 0 && bufferedPercent !== this._lastBufferedPercent) {
+        this._lastBufferedPercent = bufferedPercent;
+        const bufferedEnd = bufferedPercent * this._duration; // seconds
+
+        const FakeTimeRanges = { length: 1, start: () => 0, end: () => bufferedEnd };
+        this._observer.next(createMessage({value: { event: null, buffered: FakeTimeRanges }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
+      }
 
       this.audio.getCurrentPosition((position) => {
         this._ngZone.run(() => {
@@ -373,6 +383,7 @@ export class CordovaAudioTrack implements IAudioTrack {
     this.isPlaying = false;
     this._progress = 0;
     this._completed = 0;
+    this._lastBufferedPercent = 0;
     console.log(`Released track ${this.src}`);
   }
 }
