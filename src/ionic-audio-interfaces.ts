@@ -73,6 +73,14 @@ export interface IAudioTrack extends ITrackConstraint {
    */
   completed: number;
   /**
+   * Gets current track buffered progress as a fraction [0, 1)
+   *
+   * @property bufferedPercent
+   * @readonly
+   * @type {number}
+   */
+  bufferedPercent: number;
+  /**
    * Gets the current volume
    *
    * @property volume
@@ -120,7 +128,7 @@ export enum STATUS_MEDIA  {
 }
 
 export const STATUS_MEDIA_MSG = ["None", "Starting/CanPlay", "Running", "Paused", "Stopped",
-                                 "Position", "Progress", "Suspend", "Seek", "Error",
+                                 "Position", "BufferProgress", "Suspend", "Seek", "Error",
                                  "DurationChange", "ProgressEnabled/CanPlay",
                                  "LoadStarting", "LoadedMetadata", "CanPlayThru" ];
 

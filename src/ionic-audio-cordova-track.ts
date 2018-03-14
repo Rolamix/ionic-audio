@@ -24,9 +24,9 @@ export class CordovaAudioTrack implements IAudioTrack {
   private _duration: number;
   private _lastBufferedPercent: number = 0;
   private _volume: number = 1;
-  private _id: number;
-  private _isLoading: boolean;
-  private _hasLoaded: boolean;
+  private _id: number = null;
+  private _isLoading: boolean = false;
+  private _hasLoaded: boolean = false;
   private _timer: any = null;
   private _ngZone: NgZone;
   private _observer: Subject<IMessage>;
@@ -121,7 +121,7 @@ export class CordovaAudioTrack implements IAudioTrack {
         const bufferedEnd = bufferedPercent * this._duration; // seconds
 
         const FakeTimeRanges = { length: 1, start: () => 0, end: () => bufferedEnd };
-        this._observer.next(createMessage({value: { event: null, buffered: FakeTimeRanges }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
+        this._observer.next(createMessage({value: { event: null, buffered: FakeTimeRanges, bufferedPercent }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
       }
 
       this.audio.getCurrentPosition((position) => {
@@ -205,6 +205,10 @@ export class CordovaAudioTrack implements IAudioTrack {
    * @type {number}
    */
   public get duration() : number {
+    if (this._duration > 0 || !this.audio) { return this._duration; }
+    // Otherwise, the track itself may have this recorded via the events
+    // that do not get exposed:
+    this._duration = this.audio.getDuration();
     return this._duration;
   }
 
@@ -228,6 +232,22 @@ export class CordovaAudioTrack implements IAudioTrack {
  */
   public get completed() : number {
     return this._completed;
+  }
+
+  /**
+   * Gets current track buffered progress as a fraction [0, 1)
+   *
+   * @property bufferedPercent
+   * @readonly
+   * @type {number}
+   */
+  public get bufferedPercent(): number {
+    if (this._lastBufferedPercent > 0 || !this.audio) { return this._lastBufferedPercent; }
+    // Otherwise, the track itself may have this recorded via the events
+    // that do not get exposed:
+    const pct = this.audio.getBufferedPercent();
+    this._lastBufferedPercent = pct;
+    return pct;
   }
 
 /**

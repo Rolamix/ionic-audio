@@ -23,6 +23,7 @@ export class WebAudioTrack implements IAudioTrack {
   private _progress: number = 0;
   private _completed: number = 0;
   private _duration: number;
+  private _bufferedPercent: number = 0;
   private _volume: number;
   private _id: number;
   private _isLoading: boolean;
@@ -170,6 +171,17 @@ export class WebAudioTrack implements IAudioTrack {
    */
   public get completed() : number {
     return this._completed;
+  }
+
+  /**
+   * Gets current track buffered progress as a fraction [0, 1)
+   *
+   * @property bufferedPercent
+   * @readonly
+   * @type {number}
+   */
+  public get bufferedPercent(): number {
+    return this._bufferedPercent;
   }
 
   /**
@@ -342,6 +354,7 @@ export class WebAudioTrack implements IAudioTrack {
     this.isPlaying = false;
     this._progress = 0;
     this._completed = 0;
+    this._bufferedPercent = 0;
     console.log(`Released track ${this.src}`);
   }
 
@@ -352,7 +365,20 @@ export class WebAudioTrack implements IAudioTrack {
   }
 
   private handleBufferProgress = (e) => {
-    this._observer.next(createMessage({value: { event: e, buffered: this.audio.buffered }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
+    const buffered = this.audio.buffered;
+    let bufferedPercent = 0;
+
+    if (buffered && buffered.length > 0) {
+      const buffer = [];
+      for (let i = 0; i < buffered.length; i++) {
+        buffer.push({ start: buffered.start(i), end: buffered.end(i) });
+      }
+      const bufferEnd = buffer[0].end;
+      bufferedPercent = bufferEnd / this.audio.duration;
+    }
+
+    this._bufferedPercent = bufferedPercent;
+    this._observer.next(createMessage({value: { event: e, buffered, bufferedPercent }, status: STATUS_MEDIA.MEDIA_PROGRESS}));
   }
 
   private handleDurationChange = (e:any) => {
