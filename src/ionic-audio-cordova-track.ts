@@ -94,6 +94,7 @@ export class CordovaAudioTrack implements IAudioTrack {
             console.log(`Audio error state => track ${this.src}`, extraArg);
             this.isPlaying = false;
             this._lastBufferedPercent = 0;
+            this.stopTimer();
             // this._observer.next(createMessage({value: extraArg, status: STATUS_MEDIA.MEDIA_ERROR}));
             break;
         }
@@ -107,6 +108,7 @@ export class CordovaAudioTrack implements IAudioTrack {
 
   private startTimer() {
     this._timer = setInterval(() => {
+      if (!this.audio) { return; }
       if (this._duration === undefined || this._duration < 0) {
         let duration: number = this.audio.getDuration();
         if (duration > 0) {
@@ -343,6 +345,7 @@ export class CordovaAudioTrack implements IAudioTrack {
  * @method stop
  */
   stop() {
+    this.stopTimer();
     this.audio.stop();  // calls Media onSuccess callback
   }
 
