@@ -1,5 +1,4 @@
 import {IAudioTrack, IMessage, STATUS_MEDIA, createMessage} from './ionic-audio-interfaces';
-import {Injectable, Optional} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -15,7 +14,6 @@ window.AudioContext = window['AudioContext'] || window['webkitAudioContext'];
  * @implements {IAudioTrack}
  */
 
-@Injectable()
 export class WebAudioTrack implements IAudioTrack {
   private audio: HTMLAudioElement;
   public isPlaying: boolean = false;
@@ -32,8 +30,8 @@ export class WebAudioTrack implements IAudioTrack {
 
   constructor(
     public src: string,
-    @Optional() public preload: string = 'none',
-    @Optional() public autoplay: boolean = false, // this flag is needed for older versions of iOS
+    public preload: string = 'none',
+    public autoplay: boolean = false, // this flag is needed for older versions of iOS
   ) {
     // audio context not needed for now
     // @Optional() private ctx: AudioContext = undefined

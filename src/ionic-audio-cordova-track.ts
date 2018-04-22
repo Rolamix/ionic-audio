@@ -1,5 +1,5 @@
 import {IAudioTrack, IMessage, STATUS_MEDIA, createMessage} from './ionic-audio-interfaces';
-import {Injectable, NgZone} from '@angular/core';
+import { NgZone} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -13,7 +13,6 @@ declare let Media: any;
  * @constructor
  * @implements {IAudioTrack}
  */
-@Injectable()
 export class CordovaAudioTrack implements IAudioTrack {
   private audio: any;
   public isPlaying: boolean = false;
