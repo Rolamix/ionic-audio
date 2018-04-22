@@ -137,7 +137,7 @@ export class CordovaAudioTrack implements IAudioTrack {
                 this._observer.next(createMessage({value: this.audio, status: STATUS_MEDIA.MEDIA_PROGRESS_ENABLE}));
               }
 
-              this._observer.next(createMessage({value: this._completed, status: STATUS_MEDIA.MEDIA_POSITION}));
+              this._observer.next(createMessage({value: this._completed, position: this._progress, status: STATUS_MEDIA.MEDIA_POSITION}));
             }
           }
         })},
